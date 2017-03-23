@@ -1,3 +1,12 @@
+window.requestAnimFrame = (function(){
+  return  window.requestAnimationFrame       ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame    ||
+          function( callback ){
+            window.setTimeout(callback, 1000 / 60);
+          }
+})()
+
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
@@ -26,8 +35,10 @@ Point.prototype.draw = function(ctx) {
 Point.prototype.move = function() {
 	this.x += this.sx
 	this.y += this.sy
-	if(this.x > w || this.x < 0) this.sx = -this.sx
-	if(this.y > h || this.y < 0) this.sy = -this.sy
+	if(this.x > w) this.sx = -Math.abs(this.sx)
+	else if(this.x < 0) this.sx = Math.abs(this.sx)
+	if(this.y > h) this.sy = -Math.abs(this.sy)
+	else if(this.y < 0) this.sy = Math.abs(this.sy)
 }
 
 Point.prototype.drawLine = function(ctx, p) {
@@ -64,15 +75,12 @@ function paint() {
 }
 
 function loop() {
-	requestAnimationFrame(loop)
+	requestAnimFrame(loop)
 	paint()
 }
 
-
-
 window.addEventListener('load', loop())
 window.addEventListener('resize', function() {
-	w = canvas.width = window.innerWidth;
-	h = canvas.height = window.innerHeight;
-	loop()
+	w = canvas.width = canvas.offsetWidth
+	h = canvas.height = canvas.offsetHeight
 })
